@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الهروب من الوحش</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+        }
+
+        #uiContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #healthBar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 200px;
+            height: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+
+        #healthFill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(to right, #ff0000, #ffff00, #00ff00);
+            transition: width 0.3s;
+        }
+
+        #ammoCounter {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid gold;
+        }
+
+        #scoreCounter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #4169E1;
+        }
+
+        #startScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 42, 108, 0.9), rgba(178, 31, 31, 0.9));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        #gameTitle {
+            font-size: 42px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            margin-bottom: 30px;
+            color: #FFD700;
+            animation: pulse 2s infinite;
+        }
+
+        #startButton {
+            padding: 18px 35px;
+            font-size: 22px;
+            background: linear-gradient(135deg, #ff8a00, #e52e71);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            margin: 15px;
+            font-weight: bold;
+        }
+
+        #startButton:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        #controlsInfo {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 20px;
+            max-width: 90%;
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(178, 31, 31, 0.9), rgba(0, 0, 0, 0.9));
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        #gameOverText {
+            font-size: 60px;
+            color: #ff0000;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+            animation: shake 0.5s infinite;
+        }
+
+        #finalScore {
+            font-size: 32px;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 2px solid gold;
+        }
+
+        #restartButton {
+            padding: 18px 35px;
+            font-size: 22px;
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            font-weight: bold;
+        }
+
+        #restartButton:hover {
+            transform: scale(1.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .mobile-controls {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            display: grid;
+            grid-template-areas: 
+                ". up ."
+                "left down right";
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .control-button {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            user-select: none;
+            transition: all 0.2s;
+        }
+
+        .control-button:active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3));
+            transform: scale(0.95);
+        }
+
+        #upButton { grid-area: up; }
+        #leftButton { grid-area: left; }
+        #downButton { grid-area: down; }
+        #rightButton { grid-area: right; }
+
+        #shootButton {
+            position: absolute;
+            bottom: 35px;
+            right: 35px;
+            width: 85px;
+            height: 85px;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            pointer-events: auto;
+            user-select: none;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        #shootButton:active {
+            transform: scale(0.9);
+            background: linear-gradient(135deg, #cc0000, #990000);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 768px) {
+            #gameTitle { font-size: 36px; }
+            #startButton, #restartButton { 
+                padding: 16px 30px; 
+                font-size: 20px; 
+            }
+            .control-button {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            #shootButton {
+                width: 80px;
+                height: 80px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="uiContainer">
+            <div id="healthBar">
+                <div id="healthFill"></div>
+            </div>
+            
+            <div id="ammoCounter">🎯 الرصاص: ∞</div>
+            <div id="scoreCounter">⭐ النقاط: 0</div>
+            
+            <div id="startScreen">
+                <h1 id="gameTitle">لعبة الهروب من الوحش</h1>
+                <button id="startButton">🚀 ابدأ اللعبة</button>
+                <div id="controlsInfo">
+                    <p>🏃 اهرب من الوحوش الحمراء</p>
+                    <p>🔫 اضغط زر الإطلاق للهجوم</p>
+                    <p>💥 كل وحش = 10 نقاط</p>
+                </div>
+            </div>
+            
+            <div class="mobile-controls">
+                <div class="control-button" id="upButton">⬆️</div>
+                <div class="control-button" id="leftButton">⬅️</div>
+                <div class="control-button" id="downButton">⬇️</div>
+                <div class="control-button" id="rightButton">➡️</div>
+            </div>
+            
+            <div id="shootButton">🔫 إطلاق</div>
+            
+            <div id="gameOverScreen">
+                <div id="gameOverText">💀 لقد خسرت!</div>
+                <div id="finalScore">النقاط النهائية: 0</div>
+                <button id="restartButton">🔄 إعادة اللعب</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // المتغيرات الأساسية للعبة
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let player = { 
+            x: 0, y: 0, 
+            size: 25, 
+            speed: 4,
+            color: '#4169E1'
+        };
+        
+        let monsters = [];
+        let bullets = [];
+        let particles = [];
+        let score = 0;
+        let playerHealth = 100;
+        let isGameRunning = false;
+        let keys = {};
+        let touchControls = {
+            up: false,
+            left: false,
+            down: false,
+            right: false
+        };
+
+        // تهيئة اللعبة
+        function init() {
+            // ضبط حجم Canvas
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // إعداد مستمعي الأحداث
+            setupEventListeners();
+            
+            // بدء حلقة اللعبة
+            gameLoop();
+            
+            // تحديث واجهة المستخدم
+            updateHealthBar();
+            updateScore();
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 100;
+        }
+
+        function setupEventListeners() {
+            // زر البدء
+            document.getElementById('startButton').addEventListener('click', startGame);
+            document.getElementById('restartButton').addEventListener('click', restartGame);
+            
+            // التحكم باللمس
+            const setupTouchControl = (button, direction) => {
+                button.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    touchControls[direction] = true;
+                });
+                
+                button.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    touchControls[direction] = false;
+                });
+            };
+
+            setupTouchControl(document.getElementById('upButton'), 'up');
+            setupTouchControl(document.getElementById('leftButton'), 'left');
+            setupTouchControl(document.getElementById('downButton'), 'down');
+            setupTouchControl(document.getElementById('rightButton'), 'right');
+            
+            // زر الإطلاق
+            document.getElementById('shootButton').addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                shoot();
+            });
+            
+            // التحكم باللوحة المفاتيح (للتجربة)
+            document.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+                if (e.key === ' ') shoot();
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                keys[e.key.toLowerCase()] = false;
+            });
+        }
+
+        function startGame() {
+            isGameRunning = true;
+            playerHealth = 100;
+            score = 0;
+            monsters = [];
+            bullets = [];
+            particles = [];
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            updateHealthBar();
+            updateScore();
+            
+            // بدء إنشاء الوحوش
+            setInterval(createMonster, 2000);
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function createMonster() {
+            if (!isGameRunning || monsters.length >= 8) return;
+            
+            monsters.push({
+                x: Math.random() * canvas.width,
+                y: -50,
+                size: 30,
+                speed: 1 + Math.random() * 2,
+                color: '#FF0000',
+                health: 2
+            });
+        }
+
+        function shoot() {
+            if (!isGameRunning) return;
+            
+            bullets.push({
+                x: player.x,
+                y: player.y - player.size,
+                width: 4,
+                height: 12,
+                speed: 8,
+                color: '#FFD700'
+            });
+            
+            // تأثير جسيمات عند الإطلاق
+            createParticles(player.x, player.y, 3, '#FFFF00');
+        }
+
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    size: Math.random() * 3 + 1,
+                    speedX: (Math.random() - 0.5) * 4,
+                    speedY: (Math.random() - 0.5) * 4,
+                    color: color,
+                    life: 30
+                });
+            }
+        }
+
+        function updatePlayer() {
+            // التحكم باللمس
+            if (touchControls.up || keys['w'] || keys['arrowup']) player.y -= player.speed;
+            if (touchControls.down || keys['s'] || keys['arrowdown']) player.y += player.speed;
+            if (touchControls.left || keys['a'] || keys['arrowleft']) player.x -= player.speed;
+            if (touchControls.right || keys['d'] || keys['arrowright']) player.x += player.speed;
+            
+            // الحدود
+            player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
+            player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+        }
+
+        function updateMonsters() {
+            for (let i = monsters.length - 1; i >= 0; i--) {
+                const monster = monsters[i];
+                
+                // تحريك الوحش
+                monster.y += monster.speed;
+                
+                // التحقق من الاصطدام باللاعب
+                const dx = player.x - monster.x;
+                const dy = player.y - monster.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < player.size + monster.size) {
+                    playerHealth -= 0.8;
+                    updateHealthBar();
+                    createParticles(monster.x, monster.y, 8, '#FF0000');
+                    monsters.splice(i, 1);
+                    
+                    if (playerHealth <= 0) {
+                        gameOver();
+                    }
+                    continue;
+                }
+                
+                // إزالة الوحوش التي تجاوزت الشاشة
+                if (monster.y > canvas.height + 50) {
+                    monsters.splice(i, 1);
+                }
+            }
+        }
+
+        function updateBullets() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                // تحريك الرصاصة
+                bullet.y -= bullet.speed;
+                
+                // التحقق من الاصطدام بالوحوش
+                for (let j = monsters.length - 1; j >= 0; j--) {
+                    const monster = monsters[j];
+                    const dx = bullet.x - monster.x;
+                    const dy = bullet.y - monster.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < monster.size) {
+                        monster.health--;
+                        
+                        if (monster.health <= 0) {
+                            createParticles(monster.x, monster.y, 15, '#FF6B6B');
+                            monsters.splice(j, 1);
+                            score += 10;
+                            updateScore();
+                        } else {
+                            createParticles(monster.x, monster.y, 5, '#FFA500');
+                        }
+                        
+                        bullets.splice(i, 1);
+                        break;
+                    }
+                }
+                
+                // إزالة الرصاصات التي تجاوزت الشاشة
+                if (bullet.y < -20) {
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                particle.life--;
+                
+                if (particle.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // تأثير تألق للاعب
+            ctx.shadowColor = player.color;
+            ctx.shadowBlur = 15;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawMonsters() {
+            monsters.forEach(monster => {
+                ctx.fillStyle = monster.color;
+                ctx.beginPath();
+                ctx.arc(monster.x, monster.y, monster.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // عيون الوحش
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(monster.x - 8, monster.y - 5, 6, 0, Math.PI * 2);
+                ctx.arc(monster.x + 8, monster.y - 5, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(monster.x - 8, monster.y - 5, 3, 0, Math.PI * 2);
+                ctx.arc(monster.x + 8, monster.y - 5, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawBullets() {
+            bullets.forEach(bullet => {
+                ctx.fillStyle = bullet.color;
+                ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
+                
+                // تأثير الضوء للرصاصة
+                ctx.shadowColor = bullet.color;
+                ctx.shadowBlur = 10;
+                ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function drawParticles() {
+            particles.forEach(particle => {
+                ctx.globalAlpha = particle.life / 30;
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        function drawBackground() {
+            // خلفية متدرجة
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(1, '#98FB98');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // بعض النجوم/النقاط في الخلفية
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for (let i = 0; i < 50; i++) {
+                const x = (i * 47) % canvas.width;
+                const y = (i * 23) % canvas.height;
+                ctx.beginPath();
+                ctx.arc(x, y, 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function gameLoop() {
+            // مسح الشاشة
+            drawBackground();
+            
+            if (isGameRunning) {
+                updatePlayer();
+                updateMonsters();
+                updateBullets();
+                updateParticles();
+            }
+            
+            // الرسم
+            drawParticles();
+            drawBullets();
+            drawMonsters();
+            drawPlayer();
+            
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateHealthBar() {
+            const healthFill = document.getElementById('healthFill');
+            healthFill.style.width = `${playerHealth}%`;
+            
+            if (playerHealth > 70) {
+                healthFill.style.background = 'linear-gradient(to right, #00ff00, #ffff00)';
+            } else if (playerHealth > 30) {
+                healthFill.style.background = 'linear-gradient(to right, #ffff00, #ff0000)';
+            } else {
+                healthFill.style.background = '#ff0000';
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('scoreCounter').textContent = `⭐ النقاط: ${score}`;
+        }
+
+        function gameOver() {
+            isGameRunning = false;
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            document.getElementById('finalScore').textContent = `النقاط النهائية: ${score}`;
+        }
+
+        // بدء اللعبة عند تحميل الصفحة
+        window.onload = init;
+    </script>
+</body>
+</html>
