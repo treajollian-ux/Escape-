@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Attack by yemin- النسخة المتطورة</title>
+    <title>Galaxy Attack - النسخة النهائية</title>
     <style>
         * {
             margin: 0;
@@ -84,7 +84,7 @@
 
         #healthFill {
             height: 100%;
-            width: 30%; /* الطاقة تبدأ من 30% فقط */
+            width: 30%;
             background: linear-gradient(90deg, #ff0000 0%, #ff6b00 50%, #00ff00 100%);
             transition: width 0.3s ease;
             border-radius: 8px;
@@ -108,7 +108,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><defs><radialGradient id="grad" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%230f0c29;stop-opacity:1" /><stop offset="100%" style="stop-color:%2324243e;stop-opacity:1" /></radialGradient></defs><rect width="100%" height="100%" fill="url(%23grad)" /></svg>');
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -128,7 +128,7 @@
             animation: titleGlow 3s ease-in-out infinite;
         }
 
-        #startButton {
+        .menu-button {
             padding: 15px 30px;
             font-size: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -139,11 +139,12 @@
             pointer-events: auto;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            margin: 20px;
+            margin: 10px;
             font-weight: bold;
+            width: 250px;
         }
 
-        #startButton:hover {
+        .menu-button:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
@@ -215,31 +216,118 @@
             animation: gameOverPulse 2s ease-in-out infinite;
         }
 
-        #finalScore {
-            font-size: 36px;
-            margin-bottom: 40px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            padding: 20px 40px;
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+        /* شاشة الإعدادات */
+        #settingsScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(15, 12, 41, 0.95) 0%, rgba(36, 36, 62, 0.98) 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 25;
+            backdrop-filter: blur(5px);
         }
 
-        #restartButton {
-            padding: 15px 30px;
-            font-size: 20px;
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            border: none;
+        .settings-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
             border-radius: 15px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 180, 219, 0.4);
-            font-weight: bold;
+            margin: 15px;
+            width: 80%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        #restartButton:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 180, 219, 0.6);
+        .settings-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #00ffff;
+            text-align: center;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #00ff00;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+
+        /* شاشة المكافآت */
+        #rewardScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 100, 0, 0.9) 0%, rgba(15, 12, 41, 0.95) 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            backdrop-filter: blur(10px);
+        }
+
+        #rewardTitle {
+            font-size: 48px;
+            color: #ffcc00;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px 30px;
+            border-radius: 15px;
+            width: 300px;
+            justify-content: space-between;
+        }
+
+        .reward-icon {
+            font-size: 32px;
+            margin-right: 15px;
         }
 
         /* تأثيرات الحركة */
@@ -262,9 +350,10 @@
         @media (max-width: 768px) {
             #gameTitle { font-size: 36px; }
             #levelTitle { font-size: 48px; }
-            #startButton, #restartButton { 
+            .menu-button { 
                 padding: 12px 25px; 
                 font-size: 18px; 
+                width: 200px;
             }
             .stat-box {
                 font-size: 14px;
@@ -298,7 +387,8 @@
             <!-- شاشة البداية -->
             <div id="startScreen">
                 <h1 id="gameTitle">Galaxy Attack 🚀</h1>
-                <button id="startButton">بدء اللعبة</button>
+                <button id="startButton" class="menu-button">بدء اللعبة</button>
+                <button id="settingsButton" class="menu-button">الإعدادات</button>
                 <div id="levelInfo">
                     <p>🎯 تحكم في الطائرة بإصبعك</p>
                     <p>👹 اهزم الوحوش لتتقدم للمراحل التالية</p>
@@ -317,7 +407,61 @@
             <div id="gameOverScreen">
                 <div id="gameOverText">لقد خسرت! 💀</div>
                 <div id="finalScore">وصلت للمرحلة: 1</div>
-                <button id="restartButton">إعادة اللعب</button>
+                <button id="restartButton" class="menu-button">إعادة اللعب</button>
+                <button id="menuButton" class="menu-button">القائمة الرئيسية</button>
+            </div>
+            
+            <!-- شاشة الإعدادات -->
+            <div id="settingsScreen">
+                <h1 class="settings-title">الإعدادات ⚙️</h1>
+                
+                <div class="settings-section">
+                    <h2 class="settings-title">الصوت</h2>
+                    <div class="setting-item">
+                        <span>الموسيقى</span>
+                        <div id="musicToggle" class="toggle-switch active"></div>
+                    </div>
+                    <div class="setting-item">
+                        <span>التأثيرات الصوتية</span>
+                        <div id="sfxToggle" class="toggle-switch active"></div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h2 class="settings-title">الطائرة</h2>
+                    <div class="setting-item">
+                        <span>الطائرة الأساسية</span>
+                        <div id="ship1Toggle" class="toggle-switch active"></div>
+                    </div>
+                    <div class="setting-item">
+                        <span>الطائرة المتقدمة</span>
+                        <div id="ship2Toggle" class="toggle-switch"></div>
+                    </div>
+                    <div class="setting-item">
+                        <span>الطائرة الأسطورية</span>
+                        <div id="ship3Toggle" class="toggle-switch"></div>
+                    </div>
+                </div>
+                
+                <button id="backButton" class="menu-button">رجوع</button>
+            </div>
+            
+            <!-- شاشة المكافآت -->
+            <div id="rewardScreen">
+                <h1 id="rewardTitle">🎉 مبروك! لقد ربحت 🎉</h1>
+                <div class="reward-item">
+                    <span>💎 ياقوت</span>
+                    <span>+50</span>
+                </div>
+                <div class="reward-item">
+                    <span>💰 مال</span>
+                    <span>+100</span>
+                </div>
+                <div class="reward-item">
+                    <span>⭐ EXP</span>
+                    <span>+200</span>
+                </div>
+                <button id="continueButton" class="menu-button">استمرار</button>
             </div>
         </div>
     </div>
@@ -327,15 +471,29 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
+        // الإعدادات
+        const settings = {
+            music: true,
+            sfx: true,
+            shipType: 1, // 1: أساسية, 2: متقدمة, 3: أسطورية
+            playerStats: {
+                health: 30,
+                speed: 6,
+                fireRate: 0.1
+            }
+        };
+        
         // المتغيرات الأساسية
         let player = {
             x: 0, y: 0,
             width: 50,
             height: 40,
             speed: 6,
-            health: 30, // الطاقة تبدأ من 30%
+            health: 30,
             maxHealth: 100,
-            isMoving: false
+            isMoving: false,
+            offsetX: 0,
+            offsetY: -50 // الطائرة أمام الإصبع بقليل
         };
         
         let enemies = [];
@@ -343,30 +501,31 @@
         let enemyBullets = [];
         let particles = [];
         let stars = [];
+        let nebulas = [];
         
         let score = 0;
         let currentLevel = 1;
         let enemiesKilled = 0;
-        let enemiesToKill = 10; // يبدأ بـ 10 وحوش في المستوى الأول
+        let enemiesToKill = 10;
         let isGameRunning = false;
         let isLevelTransition = false;
         
         // خلفيات مختلفة لكل مستوى
         const levelBackgrounds = [
-            { color1: '#1a1a2e', color2: '#16213e', color3: '#0f3460' }, // المستوى 1
-            { color1: '#2d1b2e', color2: '#4c2a5c', color3: '#6a3d8c' }, // المستوى 2
-            { color1: '#1b2d2e', color2: '#2a5c5c', color3: '#3d8c8c' }, // المستوى 3
-            { color1: '#2e2d1b', color2: '#5c5c2a', color3: '#8c8c3d' }, // المستوى 4
-            { color1: '#2e1b1b', color2: '#5c2a2a', color3: '#8c3d3d' }, // المستوى 5
+            { color1: '#0f0c29', color2: '#302b63', color3: '#24243e' },
+            { color1: '#23074d', color2: '#cc5333', color3: '#23074d' },
+            { color1: '#134E5E', color2: '#71B280', color3: '#134E5E' },
+            { color1: '#5433FF', color2: '#20BDFF', color3: '#A5FECB' },
+            { color1: '#FF512F', color2: '#F09819', color3: '#FF512F' },
         ];
         
         // أنواع الوحوش المختلفة
         const enemyTypes = [
-            { color: '#ff0000', size: 30, health: 1, speed: 2, points: 10, shootChance: 0.005 },
-            { color: '#ff6600', size: 35, health: 2, speed: 1.5, points: 20, shootChance: 0.01 },
-            { color: '#ffff00', size: 40, health: 3, speed: 1, points: 30, shootChance: 0.02 },
-            { color: '#00ff00', size: 45, health: 4, speed: 1.2, points: 40, shootChance: 0.03 },
-            { color: '#00ffff', size: 50, health: 5, speed: 0.8, points: 50, shootChance: 0.04 },
+            { color: '#ff0000', size: 30, health: 1, speed: 1.5, points: 10, shootChance: 0.003 },
+            { color: '#ff6600', size: 35, health: 2, speed: 1.2, points: 20, shootChance: 0.005 },
+            { color: '#ffff00', size: 40, health: 3, speed: 0.8, points: 30, shootChance: 0.008 },
+            { color: '#00ff00', size: 45, health: 4, speed: 0.6, points: 40, shootChance: 0.01 },
+            { color: '#00ffff', size: 50, health: 5, speed: 0.5, points: 50, shootChance: 0.015 },
         ];
 
         // === تهيئة اللعبة ===
@@ -375,6 +534,7 @@
             window.addEventListener('resize', resizeCanvas);
             setupEventListeners();
             createStars();
+            createNebulas();
             gameLoop();
             
             // تحديث واجهة المستخدم
@@ -405,6 +565,17 @@
             // أزرار الواجهة
             document.getElementById('startButton').addEventListener('click', startGame);
             document.getElementById('restartButton').addEventListener('click', restartGame);
+            document.getElementById('menuButton').addEventListener('click', backToMenu);
+            document.getElementById('settingsButton').addEventListener('click', showSettings);
+            document.getElementById('backButton').addEventListener('click', backToMenu);
+            document.getElementById('continueButton').addEventListener('click', continueGame);
+            
+            // إعدادات التبديل
+            document.getElementById('musicToggle').addEventListener('click', toggleMusic);
+            document.getElementById('sfxToggle').addEventListener('click', toggleSFX);
+            document.getElementById('ship1Toggle').addEventListener('click', () => selectShip(1));
+            document.getElementById('ship2Toggle').addEventListener('click', () => selectShip(2));
+            document.getElementById('ship3Toggle').addEventListener('click', () => selectShip(3));
         }
 
         function handleTouchStart(e) {
@@ -447,8 +618,9 @@
         }
 
         function movePlayer(targetX, targetY) {
-            player.x = targetX;
-            player.y = targetY;
+            // الطائرة تتبع الإصبع مع إزاحة للأمام
+            player.x = targetX + player.offsetX;
+            player.y = targetY + player.offsetY;
             
             // التأكد من بقاء الطائرة داخل الشاشة
             player.x = Math.max(player.width/2, Math.min(canvas.width - player.width/2, player.x));
@@ -463,16 +635,32 @@
                 stars.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: Math.random() * 2 + 1,
-                    speed: Math.random() * 2 + 1,
-                    brightness: Math.random() * 0.5 + 0.5
+                    size: Math.random() * 3 + 1,
+                    speed: Math.random() * 3 + 1,
+                    brightness: Math.random() * 0.8 + 0.2
+                });
+            }
+        }
+
+        function createNebulas() {
+            nebulas = [];
+            const nebulaCount = 5;
+            
+            for (let i = 0; i < nebulaCount; i++) {
+                nebulas.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    width: Math.random() * 300 + 100,
+                    height: Math.random() * 200 + 100,
+                    color: `rgba(${Math.random() * 100 + 50}, ${Math.random() * 100}, ${Math.random() * 150 + 100}, ${Math.random() * 0.3 + 0.1})`,
+                    speed: Math.random() * 0.5 + 0.1
                 });
             }
         }
 
         function startGame() {
             isGameRunning = true;
-            player.health = 30;
+            player.health = settings.playerStats.health;
             score = 0;
             currentLevel = 1;
             enemiesKilled = 0;
@@ -485,11 +673,17 @@
             
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'none';
             
             updateHealthBar();
             updateScore();
             updateLevel();
             updateEnemiesCounter();
+            
+            // بدء الموسيقى إذا كانت مفعلة
+            if (settings.music) {
+                // يمكن إضافة موسيقى هنا
+            }
             
             // بدء المستوى الأول
             startLevel();
@@ -497,6 +691,53 @@
 
         function restartGame() {
             startGame();
+        }
+
+        function backToMenu() {
+            isGameRunning = false;
+            document.getElementById('startScreen').style.display = 'flex';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'none';
+            document.getElementById('rewardScreen').style.display = 'none';
+            
+            clearInterval(enemySpawnInterval);
+        }
+
+        function showSettings() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('settingsScreen').style.display = 'flex';
+        }
+
+        function toggleMusic() {
+            settings.music = !settings.music;
+            document.getElementById('musicToggle').classList.toggle('active', settings.music);
+        }
+
+        function toggleSFX() {
+            settings.sfx = !settings.sfx;
+            document.getElementById('sfxToggle').classList.toggle('active', settings.sfx);
+        }
+
+        function selectShip(type) {
+            settings.shipType = type;
+            
+            // تحديث التبديلات
+            document.getElementById('ship1Toggle').classList.toggle('active', type === 1);
+            document.getElementById('ship2Toggle').classList.toggle('active', type === 2);
+            document.getElementById('ship3Toggle').classList.toggle('active', type === 3);
+            
+            // تحديث إحصائيات اللاعب بناءً على نوع الطائرة
+            switch(type) {
+                case 1:
+                    settings.playerStats = { health: 30, speed: 6, fireRate: 0.1 };
+                    break;
+                case 2:
+                    settings.playerStats = { health: 40, speed: 7, fireRate: 0.15 };
+                    break;
+                case 3:
+                    settings.playerStats = { health: 50, speed: 8, fireRate: 0.2 };
+                    break;
+            }
         }
 
         function startLevel() {
@@ -517,13 +758,13 @@
                 
                 // بدء إنشاء الوحوش باستمرار
                 clearInterval(enemySpawnInterval);
-                enemySpawnInterval = setInterval(createEnemy, 2000 - (currentLevel * 50)); // يزيد الصعوبة مع كل مستوى
+                enemySpawnInterval = setInterval(createEnemy, 2000 - (currentLevel * 50));
             }, 3000);
         }
 
         function createEnemiesForLevel() {
             enemies = [];
-            const enemyCount = 5 + currentLevel; // عدد الوحوش يزداد مع كل مستوى
+            const enemyCount = 5 + currentLevel;
             
             for (let i = 0; i < enemyCount; i++) {
                 createEnemy();
@@ -533,7 +774,6 @@
         function createEnemy() {
             if (!isGameRunning || isLevelTransition || enemies.length >= 10) return;
             
-            // اختيار نوع الوحش بناءً على المستوى
             const enemyTypeIndex = Math.min(Math.floor(Math.random() * Math.min(currentLevel, enemyTypes.length)), enemyTypes.length - 1);
             const enemyType = enemyTypes[enemyTypeIndex];
             
@@ -572,7 +812,7 @@
                 y: enemy.y + enemy.height/2,
                 width: 8,
                 height: 8,
-                speed: 5,
+                speed: 4, // جعل الرصاصات أبطأ
                 color: '#ff0000'
             });
             
@@ -596,7 +836,7 @@
         function updatePlayer() {
             // إطلاق النار تلقائياً
             if (isGameRunning && !isLevelTransition) {
-                if (Math.random() < 0.1) { // 10% فرصة للإطلاق في كل إطار
+                if (Math.random() < settings.playerStats.fireRate) {
                     shoot();
                 }
             }
@@ -682,7 +922,7 @@
                     bullet.y > player.y - player.height/2 && 
                     bullet.y < player.y + player.height/2) {
                     
-                    player.health -= 5; // كل رصاصة تخفض الطاقة 5%
+                    player.health -= 5;
                     updateHealthBar();
                     createParticles(player.x, player.y, 10, '#ff0000');
                     enemyBullets.splice(i, 1);
@@ -726,15 +966,36 @@
             }
         }
 
+        function updateNebulas() {
+            for (let i = 0; i < nebulas.length; i++) {
+                const nebula = nebulas[i];
+                nebula.y += nebula.speed;
+                
+                if (nebula.y > canvas.height + nebula.height) {
+                    nebula.y = -nebula.height;
+                    nebula.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
         function levelComplete() {
+            // عرض شاشة المكافآت
+            showRewards();
+            
             currentLevel++;
             enemiesKilled = 0;
-            enemiesToKill = Math.floor(10 * Math.pow(1.2, currentLevel-1)); // زيادة عدد الوحوش بنسبة 20% لكل مستوى
+            enemiesToKill = Math.floor(10 * Math.pow(1.2, currentLevel-1));
             
             updateLevel();
             updateEnemiesCounter();
-            
-            // الانتقال للمستوى التالي
+        }
+
+        function showRewards() {
+            document.getElementById('rewardScreen').style.display = 'flex';
+        }
+
+        function continueGame() {
+            document.getElementById('rewardScreen').style.display = 'none';
             startLevel();
         }
 
@@ -757,6 +1018,14 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
+            // رسم السدم
+            for (const nebula of nebulas) {
+                ctx.fillStyle = nebula.color;
+                ctx.beginPath();
+                ctx.ellipse(nebula.x, nebula.y, nebula.width/2, nebula.height/2, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
             // رسم النجوم
             ctx.fillStyle = 'white';
             for (const star of stars) {
@@ -771,7 +1040,24 @@
         function drawPlayer() {
             ctx.save();
             
-            // جسم الطائرة الرئيسي
+            // اختيار شكل الطائرة بناءً على الإعدادات
+            switch(settings.shipType) {
+                case 1:
+                    drawBasicShip();
+                    break;
+                case 2:
+                    drawAdvancedShip();
+                    break;
+                case 3:
+                    drawLegendaryShip();
+                    break;
+            }
+            
+            ctx.restore();
+        }
+
+        function drawBasicShip() {
+            // جسم الطائرة الأساسية
             ctx.fillStyle = '#4169E1';
             ctx.beginPath();
             ctx.moveTo(player.x, player.y - 20);
@@ -799,21 +1085,80 @@
             ctx.fillStyle = '#FF6B6B';
             ctx.fillRect(player.x - 22, player.y + 15, 8, 10);
             ctx.fillRect(player.x + 14, player.y + 15, 8, 10);
+        }
+
+        function drawAdvancedShip() {
+            // جسم الطائرة المتقدمة
+            ctx.fillStyle = '#9B59B6';
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - 25);
+            ctx.lineTo(player.x - 20, player.y - 5);
+            ctx.lineTo(player.x - 30, player.y + 20);
+            ctx.lineTo(player.x + 30, player.y + 20);
+            ctx.lineTo(player.x + 20, player.y - 5);
+            ctx.closePath();
+            ctx.fill();
             
-            // تأثير الإشعاع
+            // تفاصيل إضافية
+            ctx.strokeStyle = '#E74C3C';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(player.x - 15, player.y + 5);
+            ctx.lineTo(player.x + 15, player.y + 5);
+            ctx.stroke();
+            
+            // محركات متطورة
+            ctx.fillStyle = '#E74C3C';
+            ctx.fillRect(player.x - 25, player.y + 15, 10, 12);
+            ctx.fillRect(player.x + 15, player.y + 15, 10, 12);
+            
+            // تأثيرات الطاقة
+            ctx.fillStyle = 'rgba(155, 89, 182, 0.5)';
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, 35, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawLegendaryShip() {
+            // جسم الطائرة الأسطورية
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - 30);
+            ctx.lineTo(player.x - 15, player.y - 10);
+            ctx.lineTo(player.x - 35, player.y + 25);
+            ctx.lineTo(player.x - 15, player.y + 15);
+            ctx.lineTo(player.x, player.y + 25);
+            ctx.lineTo(player.x + 15, player.y + 15);
+            ctx.lineTo(player.x + 35, player.y + 25);
+            ctx.lineTo(player.x + 15, player.y - 10);
+            ctx.closePath();
+            ctx.fill();
+            
+            // تفاصيل ذهبية
+            ctx.strokeStyle = '#FF6347';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(player.x - 10, player.y);
+            ctx.lineTo(player.x + 10, player.y);
+            ctx.stroke();
+            
+            // محركات قوية
+            ctx.fillStyle = '#FF6347';
+            ctx.fillRect(player.x - 28, player.y + 10, 8, 15);
+            ctx.fillRect(player.x + 20, player.y + 10, 8, 15);
+            
+            // تأثيرات أسطورية
             const gradient = ctx.createRadialGradient(
                 player.x, player.y, 0,
-                player.x, player.y, 40
+                player.x, player.y, 45
             );
-            gradient.addColorStop(0, 'rgba(65, 105, 225, 0.5)');
+            gradient.addColorStop(0, 'rgba(255, 215, 0, 0.7)');
             gradient.addColorStop(1, 'transparent');
             
             ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(player.x, player.y, 40, 0, Math.PI * 2);
+            ctx.arc(player.x, player.y, 45, 0, Math.PI * 2);
             ctx.fill();
-            
-            ctx.restore();
         }
 
         function drawEnemies() {
@@ -895,6 +1240,7 @@
                 updateBullets();
                 updateParticles();
                 updateStars();
+                updateNebulas();
             }
             
             drawParticles();
