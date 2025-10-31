@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Attack - النسخة النهائية</title>
+    <title>Galaxy Attack - النسخة المحسنة</title>
     <style>
         * {
             margin: 0;
@@ -77,6 +77,7 @@
             gap: 5px;
             font-weight: bold;
             font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .icon-button {
@@ -137,35 +138,49 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            padding: 20px 0;
+            gap: 15px;
+            padding: 15px 0;
         }
 
         .menu-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ffff;
             border-radius: 15px;
             color: white;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
             font-weight: bold;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 15px;
-            min-width: 120px;
-            font-size: 16px;
+            padding: 12px;
+            min-width: 80px;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .menu-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            animation: lightning 3s linear infinite;
         }
 
         .menu-button:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
         }
 
         .menu-icon {
-            font-size: 24px;
+            font-size: 20px;
             margin-bottom: 5px;
         }
 
@@ -193,7 +208,7 @@
 
         .ships-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 15px;
             flex-grow: 1;
         }
@@ -268,7 +283,7 @@
             left: 0;
             width: 100%;
             padding: 15px;
-            display: flex;
+            display: none;
             justify-content: space-between;
             z-index: 5;
             pointer-events: none;
@@ -285,6 +300,7 @@
             border-radius: 10px;
             font-size: 14px;
             font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         #healthBar {
@@ -334,6 +350,82 @@
             text-shadow: 0 0 20px rgba(255, 204, 0, 0.8);
         }
 
+        /* شاشة الإعدادات */
+        #settingsScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(15, 12, 41, 0.95) 0%, rgba(36, 36, 62, 0.98) 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            backdrop-filter: blur(5px);
+            padding: 20px;
+        }
+
+        .settings-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #00ff00;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+
+        .language-select {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
         /* تأثيرات الحركة */
         @keyframes titleGlow {
             0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(255, 0, 255, 0.3); }
@@ -345,6 +437,11 @@
             50% { transform: translateY(-10px); }
         }
 
+        @keyframes lightning {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
         /* التكيف مع الشاشات الصغيرة */
         @media (max-width: 768px) {
             .game-title { font-size: 36px; }
@@ -352,9 +449,9 @@
                 grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
             }
             .menu-button {
-                min-width: 100px;
-                padding: 12px;
-                font-size: 14px;
+                min-width: 70px;
+                padding: 10px;
+                font-size: 12px;
             }
             .resource-item {
                 font-size: 12px;
@@ -377,7 +474,7 @@
             <div id="healthBar">
                 <div id="healthFill"></div>
             </div>
-            <button class="icon-button" onclick="showScreen('mainMenu')" style="pointer-events: auto;">⎋</button>
+            <button class="icon-button" onclick="backToMenu()" style="pointer-events: auto;">⎋</button>
         </div>
         
         <!-- الصفحة الرئيسية -->
@@ -407,6 +504,10 @@
                     <span class="menu-icon">🎮</span>
                     <span>START</span>
                 </button>
+                <button class="menu-button" onclick="showScreen('upgradeScreen')">
+                    <span class="menu-icon">⭐</span>
+                    <span>الترقيات</span>
+                </button>
             </div>
         </div>
         
@@ -430,11 +531,20 @@
             </div>
         </div>
         
+        <!-- شاشة الترقيات -->
+        <div id="upgradeScreen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 30; justify-content: center; align-items: center; flex-direction: column;">
+            <h1 style="color: #00ffff; margin-bottom: 30px;">شاشة الترقيات</h1>
+            <button class="menu-button" onclick="showScreen('mainMenu')">
+                <span>⬅️</span>
+                <span>رجوع</span>
+            </button>
+        </div>
+        
         <!-- شاشة النصر -->
         <div id="victoryScreen">
             <div class="victory-stars">⭐⭐⭐</div>
             <h1 class="victory-title">VICTORY</h1>
-            <div class="reward-buttons">
+            <div class="bottom-menu">
                 <button class="menu-button" onclick="showScreen('mainMenu')">
                     <span class="menu-icon">🏠</span>
                     <span>MENU</span>
@@ -447,12 +557,39 @@
         </div>
         
         <!-- شاشة الإعدادات -->
-        <div id="settingsScreen" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 30; justify-content: center; align-items: center; flex-direction: column;">
-            <h1 style="color: #00ffff; margin-bottom: 30px;">الإعدادات</h1>
-            <button class="menu-button" onclick="showScreen('mainMenu')">
-                <span>⬅️</span>
-                <span>رجوع</span>
-            </button>
+        <div id="settingsScreen">
+            <h1 style="color: #00ffff; margin-bottom: 30px; text-align: center;">الإعدادات ⚙️</h1>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <span>الموسيقى</span>
+                    <div class="toggle-switch active" id="musicToggle"></div>
+                </div>
+                <div class="setting-item">
+                    <span>التأثيرات الصوتية</span>
+                    <div class="toggle-switch active" id="sfxToggle"></div>
+                </div>
+                <div class="setting-item">
+                    <span>تغيير اللغة</span>
+                    <select class="language-select" id="languageSelect">
+                        <option value="ar">العربية</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <span>الاهتزاز</span>
+                    <div class="toggle-switch active" id="vibrationToggle"></div>
+                </div>
+                <div class="setting-item">
+                    <span>الجودة العالية</span>
+                    <div class="toggle-switch" id="qualityToggle"></div>
+                </div>
+            </div>
+            <div class="bottom-menu" style="margin-top: 30px;">
+                <button class="menu-button" onclick="showScreen('mainMenu')">
+                    <span class="menu-icon">⬅️</span>
+                    <span>رجوع</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -460,14 +597,21 @@
         // === بيانات اللعبة ===
         const gameData = {
             resources: {
-                gems: 15000,
-                coins: 50000,
+                gems: 0,  // تبدأ من الصفر
+                coins: 0, // تبدأ من الصفر
                 exp: 0
             },
             currentShip: 1,
             unlockedShips: [1],
             currentLevel: 1,
-            ships: []
+            ships: [],
+            settings: {
+                music: true,
+                sfx: true,
+                vibration: true,
+                quality: false,
+                language: 'ar'
+            }
         };
 
         // إنشاء 30 طائرة مختلفة
@@ -527,7 +671,7 @@
         let lastEnemySpawn = 0;
         let lastBossSpawn = 0;
         let enemySpawnRate = 1000; // ميلي ثانية بين ظهور الأعداء
-        let bossSpawnRate = 5000; // كل 5 ثواني يظهر وحش كبير
+        let bossSpawnRate = 15000; // كل 15 ثانية يظهر وحش كبير
 
         // === تهيئة اللعبة ===
         function init() {
@@ -535,6 +679,7 @@
             showScreen('mainMenu');
             updateResourcesDisplay();
             createStoreItems();
+            setupSettings();
             
             // إعداد التحكم باللمس
             setupTouchControls();
@@ -561,6 +706,22 @@
             canvas.addEventListener('mousedown', handleMouseDown);
             canvas.addEventListener('mousemove', handleMouseMove);
             canvas.addEventListener('mouseup', handleMouseUp);
+        }
+
+        function setupSettings() {
+            document.getElementById('musicToggle').addEventListener('click', () => toggleSetting('music'));
+            document.getElementById('sfxToggle').addEventListener('click', () => toggleSetting('sfx'));
+            document.getElementById('vibrationToggle').addEventListener('click', () => toggleSetting('vibration'));
+            document.getElementById('qualityToggle').addEventListener('click', () => toggleSetting('quality'));
+            document.getElementById('languageSelect').addEventListener('change', (e) => {
+                gameData.settings.language = e.target.value;
+            });
+        }
+
+        function toggleSetting(setting) {
+            gameData.settings[setting] = !gameData.settings[setting];
+            const toggle = document.getElementById(`${setting}Toggle`);
+            toggle.classList.toggle('active', gameData.settings[setting]);
         }
 
         let touchId = null;
@@ -626,13 +787,6 @@
             
             // إظهار الشاشة المطلوبة
             document.getElementById(screenName).style.display = 'flex';
-            
-            // إذا كانت شاشة اللعبة، ابدأ اللعبة
-            if (screenName === 'gameCanvas') {
-                if (!gameActive) {
-                    startGame();
-                }
-            }
         }
 
         function updateResourcesDisplay() {
@@ -700,8 +854,9 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
             
-            // إخفاء واجهة اللعبة مؤقتاً
-            document.querySelector('.game-ui').style.display = 'none';
+            // إخفاء الصفحة الرئيسية وإظهار واجهة اللعبة
+            document.getElementById('mainMenu').style.display = 'none';
+            document.querySelector('.game-ui').style.display = 'flex';
             
             // تهيئة اللاعب
             const currentShip = gameData.ships.find(s => s.id === gameData.currentShip);
@@ -737,11 +892,6 @@
                     speed: Math.random() * 2 + 1
                 });
             }
-
-            // إظهار واجهة اللعبة
-            setTimeout(() => {
-                document.querySelector('.game-ui').style.display = 'flex';
-            }, 100);
 
             // بدء حلقة اللعبة
             gameLoop(ctx, canvas);
@@ -1200,12 +1350,12 @@
         function gameOver() {
             gameActive = false;
             alert(`انتهت اللعبة! النقاط: ${score}`);
-            showScreen('mainMenu');
-            updateResourcesDisplay();
+            backToMenu();
         }
 
         function showVictory() {
             gameActive = false;
+            // جمع المال والياقوت عند الفوز
             gameData.resources.coins += score;
             gameData.resources.gems += Math.floor(score / 100);
             gameData.currentLevel++;
@@ -1216,6 +1366,13 @@
         function nextLevel() {
             document.getElementById('victoryScreen').style.display = 'none';
             startGame();
+        }
+
+        function backToMenu() {
+            gameActive = false;
+            document.querySelector('.game-ui').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'flex';
+            updateResourcesDisplay();
         }
 
         // بدء اللعبة
