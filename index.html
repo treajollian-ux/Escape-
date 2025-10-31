@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الهروب من الوحش</title>
+    <title>لعبة الهروب من الوحش - محسنة</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: white;
             overflow: hidden;
             height: 100vh;
@@ -27,13 +27,16 @@
             position: relative;
             width: 100%;
             height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
         }
 
         #gameCanvas {
             width: 100%;
             height: 100%;
             display: block;
-            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 100%);
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
         #uiContainer {
@@ -45,150 +48,152 @@
             pointer-events: none;
         }
 
+        /* تحسين شريط الصحة */
         #healthBar {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 200px;
-            height: 20px;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
+            top: 25px;
+            left: 25px;
+            width: 250px;
+            height: 25px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
             overflow: hidden;
-            border: 2px solid white;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
         #healthFill {
             height: 100%;
             width: 100%;
-            background: linear-gradient(to right, #ff0000, #ffff00, #00ff00);
-            transition: width 0.3s;
+            background: linear-gradient(90deg, #ff0000 0%, #ff6b00 50%, #00ff00 100%);
+            transition: width 0.3s ease;
+            border-radius: 13px;
         }
 
-        #ammoCounter {
+        #healthText {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 2px solid gold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        /* عدادات محسنة */
+        .counter {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            padding: 12px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            font-size: 18px;
+            font-weight: bold;
         }
 
         #scoreCounter {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 2px solid #4169E1;
+            top: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid #a78bfa;
         }
 
+        #ammoCounter {
+            position: absolute;
+            bottom: 120px;
+            right: 25px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: 2px solid #fbb6ce;
+        }
+
+        /* شاشة البدء محسنة */
         #startScreen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(26, 42, 108, 0.9), rgba(178, 31, 31, 0.9));
+            background: radial-gradient(circle at center, rgba(15, 12, 41, 0.95) 0%, rgba(36, 36, 62, 0.98) 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 10;
+            backdrop-filter: blur(5px);
         }
 
         #gameTitle {
-            font-size: 42px;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+            font-size: 48px;
             text-align: center;
             margin-bottom: 30px;
-            color: #FFD700;
-            animation: pulse 2s infinite;
+            background: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            animation: titleGlow 3s ease-in-out infinite;
         }
 
         #startButton {
-            padding: 18px 35px;
-            font-size: 22px;
-            background: linear-gradient(135deg, #ff8a00, #e52e71);
+            padding: 20px 40px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
-            border-radius: 15px;
+            border-radius: 20px;
             color: white;
             cursor: pointer;
             pointer-events: auto;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            margin: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            margin: 20px;
             font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #startButton::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        #startButton:hover::before {
+            left: 100%;
         }
 
         #startButton:hover {
-            transform: scale(1.08);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
 
-        #controlsInfo {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            border-radius: 12px;
+        #gameInfo {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
             text-align: center;
-            font-size: 16px;
-            line-height: 1.6;
             margin: 20px;
-            max-width: 90%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        #gameOverScreen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(178, 31, 31, 0.9), rgba(0, 0, 0, 0.9));
-            display: none;
-            flex-direction: column;
+        .info-item {
+            margin: 10px 0;
+            font-size: 16px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 20;
+            gap: 10px;
         }
 
-        #gameOverText {
-            font-size: 60px;
-            color: #ff0000;
-            margin-bottom: 25px;
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-            animation: shake 0.5s infinite;
-        }
-
-        #finalScore {
-            font-size: 32px;
-            margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 2px solid gold;
-        }
-
-        #restartButton {
-            padding: 18px 35px;
-            font-size: 22px;
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            border: none;
-            border-radius: 15px;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            font-weight: bold;
-        }
-
-        #restartButton:hover {
-            transform: scale(1.08);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
+        /* عناصر التحكم المحسنة */
         .mobile-controls {
             position: absolute;
             bottom: 25px;
@@ -197,29 +202,31 @@
             grid-template-areas: 
                 ". up ."
                 "left down right";
-            gap: 12px;
+            gap: 15px;
             pointer-events: auto;
         }
 
         .control-button {
-            width: 65px;
-            height: 65px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             user-select: none;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .control-button:active {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3));
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
             transform: scale(0.95);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         #upButton { grid-area: up; }
@@ -229,57 +236,149 @@
 
         #shootButton {
             position: absolute;
-            bottom: 35px;
-            right: 35px;
-            width: 85px;
-            height: 85px;
-            background: linear-gradient(135deg, #ff0000, #cc0000);
-            border-radius: 50%;
+            bottom: 40px;
+            right: 40px;
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #ff0000, #ff6b6b);
+            border-radius: 25px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 22px;
             color: white;
             pointer-events: auto;
             user-select: none;
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            transition: all 0.2s;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            transition: all 0.2s ease;
             font-weight: bold;
+            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.3);
         }
 
         #shootButton:active {
             transform: scale(0.9);
-            background: linear-gradient(135deg, #cc0000, #990000);
+            background: linear-gradient(135deg, #cc0000, #ff4757);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        /* شاشة نهاية اللعبة محسنة */
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(178, 31, 31, 0.9) 0%, rgba(15, 12, 41, 0.95) 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        #gameOverText {
+            font-size: 64px;
+            color: #ff0000;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            animation: gameOverPulse 2s ease-in-out infinite;
         }
 
+        #finalScore {
+            font-size: 36px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            padding: 20px 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        #restartButton {
+            padding: 20px 40px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 180, 219, 0.4);
+            font-weight: bold;
+        }
+
+        #restartButton:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 180, 219, 0.6);
+        }
+
+        /* تأثيرات الحركة */
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 255, 0.5), 0 0 60px rgba(255, 0, 255, 0.3); }
+            50% { text-shadow: 0 0 40px rgba(0, 255, 255, 0.8), 0 0 80px rgba(255, 0, 255, 0.5); }
+        }
+
+        @keyframes gameOverPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* النجوم في الخلفية */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* تأثيرات الجسيمات */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+
+        /* التكيف مع الشاشات الصغيرة */
         @media (max-width: 768px) {
             #gameTitle { font-size: 36px; }
             #startButton, #restartButton { 
-                padding: 16px 30px; 
+                padding: 18px 35px; 
                 font-size: 20px; 
             }
             .control-button {
-                width: 60px;
-                height: 60px;
+                width: 65px;
+                height: 65px;
                 font-size: 24px;
             }
             #shootButton {
-                width: 80px;
-                height: 80px;
-                font-size: 18px;
+                width: 85px;
+                height: 85px;
+                font-size: 20px;
+            }
+            .counter {
+                font-size: 16px;
+                padding: 10px 15px;
             }
         }
     </style>
@@ -288,21 +387,26 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
         
+        <!-- النجوم في الخلفية -->
+        <div class="stars" id="starsContainer"></div>
+        
         <div id="uiContainer">
             <div id="healthBar">
                 <div id="healthFill"></div>
+                <div id="healthText">الصحة: 100%</div>
             </div>
             
-            <div id="ammoCounter">🎯 الرصاص: ∞</div>
-            <div id="scoreCounter">⭐ النقاط: 0</div>
+            <div id="scoreCounter" class="counter">⭐ النقاط: 0</div>
+            <div id="ammoCounter" class="counter">🎯 الرصاص: ∞</div>
             
             <div id="startScreen">
-                <h1 id="gameTitle">لعبة الهروب من الوحش</h1>
-                <button id="startButton">🚀 ابدأ اللعبة</button>
-                <div id="controlsInfo">
-                    <p>🏃 اهرب من الوحوش الحمراء</p>
-                    <p>🔫 اضغط زر الإطلاق للهجوم</p>
-                    <p>💥 كل وحش = 10 نقاط</p>
+                <h1 id="gameTitle">لعبة الهروب من الوحش 🎮</h1>
+                <button id="startButton">🚀 ابدأ المغامرة</button>
+                <div id="gameInfo">
+                    <div class="info-item">🎯 اضرب الوحوش لتحقيق النقاط</div>
+                    <div class="info-item">🏃 اهرب من الوحوش الحمراء</div>
+                    <div class="info-item">💖 حافظ على صحتك للبقاء حياً</div>
+                    <div class="info-item">⭐ كل وحش = 10 نقاط</div>
                 </div>
             </div>
             
@@ -324,14 +428,37 @@
     </div>
 
     <script>
-        // المتغيرات الأساسية للعبة
+        // === إعداد النجوم في الخلفية ===
+        function createStars() {
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // مواقع وأحجام عشوائية
+                const size = Math.random() * 3 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // تأخير عشوائي للوميض
+                star.style.animationDelay = `${Math.random() * 4}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // === المتغيرات الأساسية للعبة ===
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
         let player = { 
             x: 0, y: 0, 
-            size: 25, 
-            speed: 4,
+            size: 30, 
+            speed: 5,
             color: '#4169E1'
         };
         
@@ -349,19 +476,13 @@
             right: false
         };
 
-        // تهيئة اللعبة
+        // === تهيئة اللعبة ===
         function init() {
-            // ضبط حجم Canvas
+            createStars();
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
-            
-            // إعداد مستمعي الأحداث
             setupEventListeners();
-            
-            // بدء حلقة اللعبة
             gameLoop();
-            
-            // تحديث واجهة المستخدم
             updateHealthBar();
             updateScore();
         }
@@ -374,7 +495,6 @@
         }
 
         function setupEventListeners() {
-            // زر البدء
             document.getElementById('startButton').addEventListener('click', startGame);
             document.getElementById('restartButton').addEventListener('click', restartGame);
             
@@ -396,13 +516,12 @@
             setupTouchControl(document.getElementById('downButton'), 'down');
             setupTouchControl(document.getElementById('rightButton'), 'right');
             
-            // زر الإطلاق
             document.getElementById('shootButton').addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 shoot();
             });
             
-            // التحكم باللوحة المفاتيح (للتجربة)
+            // التحكم باللوحة المفاتيح
             document.addEventListener('keydown', (e) => {
                 keys[e.key.toLowerCase()] = true;
                 if (e.key === ' ') shoot();
@@ -427,8 +546,8 @@
             updateHealthBar();
             updateScore();
             
-            // بدء إنشاء الوحوش
-            setInterval(createMonster, 2000);
+            // إنشاء الوحوش باستمرار
+            setInterval(createMonster, 1500);
         }
 
         function restartGame() {
@@ -441,8 +560,8 @@
             monsters.push({
                 x: Math.random() * canvas.width,
                 y: -50,
-                size: 30,
-                speed: 1 + Math.random() * 2,
+                size: 35,
+                speed: 1.5 + Math.random() * 2,
                 color: '#FF0000',
                 health: 2
             });
@@ -454,14 +573,13 @@
             bullets.push({
                 x: player.x,
                 y: player.y - player.size,
-                width: 4,
-                height: 12,
-                speed: 8,
+                width: 6,
+                height: 15,
+                speed: 10,
                 color: '#FFD700'
             });
             
-            // تأثير جسيمات عند الإطلاق
-            createParticles(player.x, player.y, 3, '#FFFF00');
+            createParticles(player.x, player.y, 5, '#FFFF00');
         }
 
         function createParticles(x, y, count, color) {
@@ -469,23 +587,21 @@
                 particles.push({
                     x: x,
                     y: y,
-                    size: Math.random() * 3 + 1,
-                    speedX: (Math.random() - 0.5) * 4,
-                    speedY: (Math.random() - 0.5) * 4,
+                    size: Math.random() * 4 + 2,
+                    speedX: (Math.random() - 0.5) * 6,
+                    speedY: (Math.random() - 0.5) * 6,
                     color: color,
-                    life: 30
+                    life: 40
                 });
             }
         }
 
         function updatePlayer() {
-            // التحكم باللمس
             if (touchControls.up || keys['w'] || keys['arrowup']) player.y -= player.speed;
             if (touchControls.down || keys['s'] || keys['arrowdown']) player.y += player.speed;
             if (touchControls.left || keys['a'] || keys['arrowleft']) player.x -= player.speed;
             if (touchControls.right || keys['d'] || keys['arrowright']) player.x += player.speed;
             
-            // الحدود
             player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
             player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
         }
@@ -493,19 +609,16 @@
         function updateMonsters() {
             for (let i = monsters.length - 1; i >= 0; i--) {
                 const monster = monsters[i];
-                
-                // تحريك الوحش
                 monster.y += monster.speed;
                 
-                // التحقق من الاصطدام باللاعب
                 const dx = player.x - monster.x;
                 const dy = player.y - monster.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < player.size + monster.size) {
-                    playerHealth -= 0.8;
+                    playerHealth -= 1;
                     updateHealthBar();
-                    createParticles(monster.x, monster.y, 8, '#FF0000');
+                    createParticles(monster.x, monster.y, 10, '#FF0000');
                     monsters.splice(i, 1);
                     
                     if (playerHealth <= 0) {
@@ -514,7 +627,6 @@
                     continue;
                 }
                 
-                // إزالة الوحوش التي تجاوزت الشاشة
                 if (monster.y > canvas.height + 50) {
                     monsters.splice(i, 1);
                 }
@@ -524,11 +636,8 @@
         function updateBullets() {
             for (let i = bullets.length - 1; i >= 0; i--) {
                 const bullet = bullets[i];
-                
-                // تحريك الرصاصة
                 bullet.y -= bullet.speed;
                 
-                // التحقق من الاصطدام بالوحوش
                 for (let j = monsters.length - 1; j >= 0; j--) {
                     const monster = monsters[j];
                     const dx = bullet.x - monster.x;
@@ -539,12 +648,12 @@
                         monster.health--;
                         
                         if (monster.health <= 0) {
-                            createParticles(monster.x, monster.y, 15, '#FF6B6B');
+                            createParticles(monster.x, monster.y, 20, '#FF6B6B');
                             monsters.splice(j, 1);
                             score += 10;
                             updateScore();
                         } else {
-                            createParticles(monster.x, monster.y, 5, '#FFA500');
+                            createParticles(monster.x, monster.y, 8, '#FFA500');
                         }
                         
                         bullets.splice(i, 1);
@@ -552,7 +661,6 @@
                     }
                 }
                 
-                // إزالة الرصاصات التي تجاوزت الشاشة
                 if (bullet.y < -20) {
                     bullets.splice(i, 1);
                 }
@@ -574,20 +682,55 @@
         }
 
         function drawPlayer() {
+            ctx.save();
+            
+            // تأثير إشعاعي للاعب
+            const gradient = ctx.createRadialGradient(
+                player.x, player.y, 0,
+                player.x, player.y, player.size * 2
+            );
+            gradient.addColorStop(0, player.color);
+            gradient.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.size * 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // اللاعب الرئيسي
             ctx.fillStyle = player.color;
             ctx.beginPath();
             ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
             ctx.fill();
             
-            // تأثير تألق للاعب
-            ctx.shadowColor = player.color;
-            ctx.shadowBlur = 15;
+            // تفاصيل اللاعب
+            ctx.fillStyle = '#87CEEB';
+            ctx.beginPath();
+            ctx.arc(player.x - 8, player.y - 5, 8, 0, Math.PI * 2);
+            ctx.arc(player.x + 8, player.y - 5, 8, 0, Math.PI * 2);
             ctx.fill();
-            ctx.shadowBlur = 0;
+            
+            ctx.restore();
         }
 
         function drawMonsters() {
             monsters.forEach(monster => {
+                ctx.save();
+                
+                // تأثير الوحش
+                const monsterGradient = ctx.createRadialGradient(
+                    monster.x, monster.y, 0,
+                    monster.x, monster.y, monster.size * 1.5
+                );
+                monsterGradient.addColorStop(0, monster.color);
+                monsterGradient.addColorStop(1, 'rgba(255, 0, 0, 0.3)');
+                
+                ctx.fillStyle = monsterGradient;
+                ctx.beginPath();
+                ctx.arc(monster.x, monster.y, monster.size * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // جسم الوحش
                 ctx.fillStyle = monster.color;
                 ctx.beginPath();
                 ctx.arc(monster.x, monster.y, monster.size, 0, Math.PI * 2);
@@ -596,63 +739,71 @@
                 // عيون الوحش
                 ctx.fillStyle = '#FFFFFF';
                 ctx.beginPath();
-                ctx.arc(monster.x - 8, monster.y - 5, 6, 0, Math.PI * 2);
-                ctx.arc(monster.x + 8, monster.y - 5, 6, 0, Math.PI * 2);
+                ctx.arc(monster.x - 10, monster.y - 8, 7, 0, Math.PI * 2);
+                ctx.arc(monster.x + 10, monster.y - 8, 7, 0, Math.PI * 2);
                 ctx.fill();
                 
                 ctx.fillStyle = '#000000';
                 ctx.beginPath();
-                ctx.arc(monster.x - 8, monster.y - 5, 3, 0, Math.PI * 2);
-                ctx.arc(monster.x + 8, monster.y - 5, 3, 0, Math.PI * 2);
+                ctx.arc(monster.x - 10, monster.y - 8, 4, 0, Math.PI * 2);
+                ctx.arc(monster.x + 10, monster.y - 8, 4, 0, Math.PI * 2);
                 ctx.fill();
+                
+                ctx.restore();
             });
         }
 
         function drawBullets() {
             bullets.forEach(bullet => {
-                ctx.fillStyle = bullet.color;
-                ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
+                ctx.save();
                 
                 // تأثير الضوء للرصاصة
                 ctx.shadowColor = bullet.color;
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 15;
+                ctx.fillStyle = bullet.color;
                 ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
-                ctx.shadowBlur = 0;
+                
+                ctx.restore();
             });
         }
 
         function drawParticles() {
             particles.forEach(particle => {
-                ctx.globalAlpha = particle.life / 30;
+                ctx.save();
+                
+                ctx.globalAlpha = particle.life / 40;
                 ctx.fillStyle = particle.color;
                 ctx.beginPath();
                 ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                 ctx.fill();
+                
+                ctx.restore();
             });
-            ctx.globalAlpha = 1;
         }
 
         function drawBackground() {
-            // خلفية متدرجة
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#87CEEB');
-            gradient.addColorStop(1, '#98FB98');
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(0.5, '#16213e');
+            gradient.addColorStop(1, '#0f3460');
+            
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // بعض النجوم/النقاط في الخلفية
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 50; i++) {
-                const x = (i * 47) % canvas.width;
-                const y = (i * 23) % canvas.height;
+            // نجوم في الخلفية
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let i = 0; i < 80; i++) {
+                const x = (i * 53) % canvas.width;
+                const y = (i * 29) % canvas.height;
+                const size = Math.random() * 2 + 1;
+                
                 ctx.beginPath();
-                ctx.arc(x, y, 1, 0, Math.PI * 2);
+                ctx.arc(x, y, size, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
         function gameLoop() {
-            // مسح الشاشة
             drawBackground();
             
             if (isGameRunning) {
@@ -662,7 +813,6 @@
                 updateParticles();
             }
             
-            // الرسم
             drawParticles();
             drawBullets();
             drawMonsters();
@@ -673,14 +823,17 @@
 
         function updateHealthBar() {
             const healthFill = document.getElementById('healthFill');
+            const healthText = document.getElementById('healthText');
+            
             healthFill.style.width = `${playerHealth}%`;
+            healthText.textContent = `الصحة: ${Math.max(0, Math.floor(playerHealth))}%`;
             
             if (playerHealth > 70) {
-                healthFill.style.background = 'linear-gradient(to right, #00ff00, #ffff00)';
+                healthFill.style.background = 'linear-gradient(90deg, #00ff00 0%, #00ff00 50%, #00ff00 100%)';
             } else if (playerHealth > 30) {
-                healthFill.style.background = 'linear-gradient(to right, #ffff00, #ff0000)';
+                healthFill.style.background = 'linear-gradient(90deg, #ffff00 0%, #ffff00 50%, #ffff00 100%)';
             } else {
-                healthFill.style.background = '#ff0000';
+                healthFill.style.background = 'linear-gradient(90deg, #ff0000 0%, #ff0000 50%, #ff0000 100%)';
             }
         }
 
@@ -694,7 +847,7 @@
             document.getElementById('finalScore').textContent = `النقاط النهائية: ${score}`;
         }
 
-        // بدء اللعبة عند تحميل الصفحة
+        // بدء اللعبة
         window.onload = init;
     </script>
 </body>
