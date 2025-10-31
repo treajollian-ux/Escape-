@@ -193,10 +193,10 @@
             gap: 10px;
         }
 
-        /* عناصر التحكم المحسنة */
+        /* عناصر التحكم المحسنة - تم تعديل الموضع */
         .mobile-controls {
             position: absolute;
-            bottom: 25px;
+            bottom: 100px; /* تم رفع الأزرار لأعلى */
             left: 25px;
             display: grid;
             grid-template-areas: 
@@ -233,34 +233,6 @@
         #leftButton { grid-area: left; }
         #downButton { grid-area: down; }
         #rightButton { grid-area: right; }
-
-        #shootButton {
-            position: absolute;
-            bottom: 40px;
-            right: 40px;
-            width: 90px;
-            height: 90px;
-            background: linear-gradient(135deg, #ff0000, #ff6b6b);
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            color: white;
-            pointer-events: auto;
-            user-select: none;
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(15px);
-            transition: all 0.2s ease;
-            font-weight: bold;
-            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.3);
-        }
-
-        #shootButton:active {
-            transform: scale(0.9);
-            background: linear-gradient(135deg, #cc0000, #ff4757);
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
-        }
 
         /* شاشة نهاية اللعبة محسنة */
         #gameOverScreen {
@@ -352,13 +324,6 @@
             50% { opacity: 1; }
         }
 
-        /* تأثيرات الجسيمات */
-        .particle {
-            position: absolute;
-            pointer-events: none;
-            border-radius: 50%;
-        }
-
         /* التكيف مع الشاشات الصغيرة */
         @media (max-width: 768px) {
             #gameTitle { font-size: 36px; }
@@ -371,14 +336,12 @@
                 height: 65px;
                 font-size: 24px;
             }
-            #shootButton {
-                width: 85px;
-                height: 85px;
-                font-size: 20px;
-            }
             .counter {
                 font-size: 16px;
                 padding: 10px 15px;
+            }
+            .mobile-controls {
+                bottom: 90px; /* تعديل للموبايل */
             }
         }
     </style>
@@ -403,21 +366,20 @@
                 <h1 id="gameTitle">لعبة الهروب من الوحش 🎮</h1>
                 <button id="startButton">🚀 ابدأ المغامرة</button>
                 <div id="gameInfo">
-                    <div class="info-item">🎯 اضرب الوحوش لتحقيق النقاط</div>
+                    <div class="info-item">🎯 الطائرة تطلق النار تلقائياً</div>
                     <div class="info-item">🏃 اهرب من الوحوش الحمراء</div>
                     <div class="info-item">💖 حافظ على صحتك للبقاء حياً</div>
                     <div class="info-item">⭐ كل وحش = 10 نقاط</div>
                 </div>
             </div>
             
+            <!-- تم تعديل اتجاه الأزرار -->
             <div class="mobile-controls">
                 <div class="control-button" id="upButton">⬆️</div>
-                <div class="control-button" id="leftButton">⬅️</div>
+                <div class="control-button" id="rightButton">➡️</div> <!-- يمين -->
                 <div class="control-button" id="downButton">⬇️</div>
-                <div class="control-button" id="rightButton">➡️</div>
+                <div class="control-button" id="leftButton">⬅️</div> <!-- يسار -->
             </div>
-            
-            <div id="shootButton">🔫 إطلاق</div>
             
             <div id="gameOverScreen">
                 <div id="gameOverText">💀 لقد خسرت!</div>
@@ -457,7 +419,8 @@
         
         let player = { 
             x: 0, y: 0, 
-            size: 30, 
+            width: 60,  // عرض الطائرة
+            height: 40, // ارتفاع الطائرة
             speed: 5,
             color: '#4169E1'
         };
@@ -475,6 +438,8 @@
             down: false,
             right: false
         };
+        let lastShotTime = 0;
+        let shotInterval = 300; // إطلاق النار كل 300 ميلي ثانية
 
         // === تهيئة اللعبة ===
         function init() {
@@ -498,7 +463,7 @@
             document.getElementById('startButton').addEventListener('click', startGame);
             document.getElementById('restartButton').addEventListener('click', restartGame);
             
-            // التحكم باللمس
+            // التحكم باللمس - تم تعديل الاتجاهات
             const setupTouchControl = (button, direction) => {
                 button.addEventListener('touchstart', (e) => {
                     e.preventDefault();
@@ -516,15 +481,9 @@
             setupTouchControl(document.getElementById('downButton'), 'down');
             setupTouchControl(document.getElementById('rightButton'), 'right');
             
-            document.getElementById('shootButton').addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                shoot();
-            });
-            
             // التحكم باللوحة المفاتيح
             document.addEventListener('keydown', (e) => {
                 keys[e.key.toLowerCase()] = true;
-                if (e.key === ' ') shoot();
             });
             
             document.addEventListener('keyup', (e) => {
@@ -567,19 +526,30 @@
             });
         }
 
+        // إطلاق النار تلقائياً
+        function autoShoot(currentTime) {
+            if (!isGameRunning) return;
+            
+            if (currentTime - lastShotTime > shotInterval) {
+                shoot();
+                lastShotTime = currentTime;
+            }
+        }
+
         function shoot() {
             if (!isGameRunning) return;
             
+            // إطلاق رصاصة من مقدمة الطائرة
             bullets.push({
                 x: player.x,
-                y: player.y - player.size,
+                y: player.y - 20,
                 width: 6,
                 height: 15,
                 speed: 10,
                 color: '#FFD700'
             });
             
-            createParticles(player.x, player.y, 5, '#FFFF00');
+            createParticles(player.x, player.y - 10, 3, '#FFFF00');
         }
 
         function createParticles(x, y, count, color) {
@@ -597,13 +567,15 @@
         }
 
         function updatePlayer() {
+            // تم تعديل الاتجاهات لتصحيح الحركة
             if (touchControls.up || keys['w'] || keys['arrowup']) player.y -= player.speed;
             if (touchControls.down || keys['s'] || keys['arrowdown']) player.y += player.speed;
             if (touchControls.left || keys['a'] || keys['arrowleft']) player.x -= player.speed;
             if (touchControls.right || keys['d'] || keys['arrowright']) player.x += player.speed;
             
-            player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
-            player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+            // الحدود
+            player.x = Math.max(player.width/2, Math.min(canvas.width - player.width/2, player.x));
+            player.y = Math.max(player.height/2, Math.min(canvas.height - player.height/2, player.y));
         }
 
         function updateMonsters() {
@@ -615,7 +587,7 @@
                 const dy = player.y - monster.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < player.size + monster.size) {
+                if (distance < (player.width/2) + monster.size) {
                     playerHealth -= 1;
                     updateHealthBar();
                     createParticles(monster.x, monster.y, 10, '#FF0000');
@@ -681,33 +653,50 @@
             }
         }
 
+        // رسم طائرة فخمة بدلاً من الدائرة
         function drawPlayer() {
             ctx.save();
             
-            // تأثير إشعاعي للاعب
+            // جسم الطائرة الرئيسي
+            ctx.fillStyle = '#4169E1';
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - 20); // مقدمة الطائرة
+            ctx.lineTo(player.x - 30, player.y + 20); // الجناح الأيسر
+            ctx.lineTo(player.x + 30, player.y + 20); // الجناح الأيمن
+            ctx.closePath();
+            ctx.fill();
+            
+            // تفاصيل الطائرة - خطوط زخرفية
+            ctx.strokeStyle = '#87CEEB';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(player.x, player.y - 15);
+            ctx.lineTo(player.x, player.y + 15);
+            ctx.stroke();
+            
+            // نوافذ الطائرة
+            ctx.fillStyle = '#87CEEB';
+            ctx.beginPath();
+            ctx.arc(player.x - 10, player.y, 5, 0, Math.PI * 2);
+            ctx.arc(player.x + 10, player.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // محركات الطائرة
+            ctx.fillStyle = '#FF6B6B';
+            ctx.fillRect(player.x - 25, player.y + 15, 10, 8);
+            ctx.fillRect(player.x + 15, player.y + 15, 10, 8);
+            
+            // تأثير الإشعاع حول الطائرة
             const gradient = ctx.createRadialGradient(
                 player.x, player.y, 0,
-                player.x, player.y, player.size * 2
+                player.x, player.y, 40
             );
-            gradient.addColorStop(0, player.color);
+            gradient.addColorStop(0, 'rgba(65, 105, 225, 0.5)');
             gradient.addColorStop(1, 'transparent');
             
             ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(player.x, player.y, player.size * 2, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // اللاعب الرئيسي
-            ctx.fillStyle = player.color;
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // تفاصيل اللاعب
-            ctx.fillStyle = '#87CEEB';
-            ctx.beginPath();
-            ctx.arc(player.x - 8, player.y - 5, 8, 0, Math.PI * 2);
-            ctx.arc(player.x + 8, player.y - 5, 8, 0, Math.PI * 2);
+            ctx.arc(player.x, player.y, 40, 0, Math.PI * 2);
             ctx.fill();
             
             ctx.restore();
@@ -803,7 +792,7 @@
             }
         }
 
-        function gameLoop() {
+        function gameLoop(currentTime = 0) {
             drawBackground();
             
             if (isGameRunning) {
@@ -811,6 +800,7 @@
                 updateMonsters();
                 updateBullets();
                 updateParticles();
+                autoShoot(currentTime); // إطلاق النار تلقائياً
             }
             
             drawParticles();
